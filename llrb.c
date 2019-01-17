@@ -52,8 +52,8 @@ static struct LLRBNode* fixUp(struct LLRBNode *h)
 }
 
 static struct LLRBNode* insert(struct LLRBNode* h, struct LLRBNode* x,
-                                  struct LLRBTree* t, struct LLRBNode **old,
-                                  struct LLRBNode* p, int side)
+			       struct LLRBTree* t, struct LLRBNode **old,
+			       struct LLRBNode* p, int side, int replace)
 {
   int cmp;
   if (!h) {
@@ -77,19 +77,23 @@ static struct LLRBNode* insert(struct LLRBNode* h, struct LLRBNode* x,
   cmp = t->compare(h,x,t);
   if (cmp==0) {
     *old = h;
-    x->child[LEFT] = h->child[LEFT];
-    x->child[RIGHT] = h->child[RIGHT];
-    x->color = h->color;
+    if (replace) {
+      x->child[LEFT] = h->child[LEFT];
+      x->child[RIGHT] = h->child[RIGHT];
+      x->color = h->color;
 #ifndef LLRB_NO_LIST
-    x->neigh[LEFT] = h->neigh[LEFT];
-    x->neigh[RIGHT] = h->neigh[RIGHT];
-    x->neigh[LEFT]->neigh[RIGHT] = x;
-    x->neigh[RIGHT]->neigh[LEFT] = x;
+      x->neigh[LEFT] = h->neigh[LEFT];
+      x->neigh[RIGHT] = h->neigh[RIGHT];
+      x->neigh[LEFT]->neigh[RIGHT] = x;
+      x->neigh[RIGHT]->neigh[LEFT] = x;
 #endif
-    return x;
+      return x;
+    } else { /* keep original */
+      return h;
+    }
   } else {
     side = cmp<0 ? RIGHT : LEFT;
-    h->child[side] = insert(h->child[side], x, t, old, h, side);
+    h->child[side] = insert(h->child[side], x, t, old, h, side, replace);
     return fixUp(h);
   }
 }
@@ -195,12 +199,25 @@ struct LLRBNode *llrb_insert_or_replace(struct LLRBTree *tree, struct LLRBNode* 
 {
   struct LLRBNode *old = NULL;
 #ifndef LLRB_NO_LIST
-  tree->root = insert(tree->root, node, tree, &old, &tree->anchor, LEFT);
+  tree->root = insert(tree->root, node, tree, &old, &tree->anchor, LEFT, 1);
 #else
-  tree->root = insert(tree->root, node, tree, &old, NULL, LEFT);
+  tree->root = insert(tree->root, node, tree, &old, NULL, LEFT, 1);
 #endif
   return old;
 }
+
+/* insert node into tree, returning old node with the same key */
+struct LLRBNode *llrb_insert_new(struct LLRBTree *tree, struct LLRBNode* node)
+{
+  struct LLRBNode *old = NULL;
+#ifndef LLRB_NO_LIST
+  tree->root = insert(tree->root, node, tree, &old, &tree->anchor, LEFT, 0);
+#else
+  tree->root = insert(tree->root, node, tree, &old, NULL, LEFT, 0);
+#endif
+  return old;
+}
+
 
 /* find node equal to key under tree->compare */
 struct LLRBNode *llrb_find(struct LLRBTree *tree, struct LLRBNode* key)

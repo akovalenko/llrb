@@ -101,6 +101,9 @@ struct LLRBNode*
 llrb_insert_or_replace(struct LLRBTree *tree, struct LLRBNode* node);
 
 struct LLRBNode*
+llrb_insert_new(struct LLRBTree *tree, struct LLRBNode* node);
+
+struct LLRBNode*
 llrb_find(struct LLRBTree *tree, struct LLRBNode* key);
 
 struct LLRBNode*
