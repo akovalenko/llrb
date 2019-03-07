@@ -194,7 +194,8 @@ void llrb_init(struct LLRBTree* t, LLRBComparator* compare)
 }
 
 
-/* insert node into tree, returning old node with the same key */
+/* insert node into tree, returning old node with the same key.
+ * replace old node if it exists */
 struct LLRBNode *llrb_insert_or_replace(struct LLRBTree *tree, struct LLRBNode* node)
 {
   struct LLRBNode *old = NULL;
@@ -206,7 +207,8 @@ struct LLRBNode *llrb_insert_or_replace(struct LLRBTree *tree, struct LLRBNode* 
   return old;
 }
 
-/* insert node into tree, returning old node with the same key */
+/* insert node into tree, returning old node with the same key.
+ * don't replace old node if it exists */
 struct LLRBNode *llrb_insert_new(struct LLRBTree *tree, struct LLRBNode* node)
 {
   struct LLRBNode *old = NULL;
