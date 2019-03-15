@@ -9,7 +9,7 @@ node traversal).
 
 * See header comment in llrb.h for some design notes.
 
-* See example_int for how llrb could be used for Map and Set.
+* See ``example_int`` for how llrb could be used for Map and Set.
 
-* See example_string for some other useful things (how to design a
+* See ``example_string`` for some other useful things (how to design a
   structure to be a member of two independent trees).
